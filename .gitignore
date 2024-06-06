@@ -1,0 +1,8 @@
+Include/
+Lib/
+Scripts/
+share/
+credentials.txt
+metatrader.db
+pyvenv.cfg
+trade.csv
