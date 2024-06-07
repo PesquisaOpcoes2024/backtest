@@ -3,10 +3,11 @@
 # o login do MetaTrader5 na primeira linha e a senha na segunda
 # %%
 import MetaTrader5 as mt5
-from datetime import datetime
+from datetime import datetime, time
 import pandas as pd
 import csv
 import sqlite3
+import schedule
 
 #Função para capturar os dados do MetaTrader 5 e salvar no arquivo csv
 def capture_data_to_csv(filename):
@@ -59,8 +60,11 @@ csv_file = 'trade.csv'
 db_file = 'metatrader.db'
 table_name = 'trade'
 
-# Capturar dados e salvar no arquivo CSV
-capture_data_to_csv(csv_file)
+# Agendar a execução da captura de dados e adição ao banco de dados
+schedule.every().day.at("23:59").do(capture_data_to_csv, csv_file)
+schedule.every().day.at("00:00").do(add_csv_to_database, csv_file, db_file, table_name)
 
-# Adicionar os dados do CSV ao banco de dados SQLite
-add_csv_to_database(csv_file, db_file, table_name)
+# Loop infinito para executar o agendador
+while True:
+    schedule.run_pending()
+    time.sleep(60) # Espera 1 minuto antes de verificar novamente se há tarefas agendadas
