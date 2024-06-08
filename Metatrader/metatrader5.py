@@ -63,4 +63,7 @@ table_name = 'trade'
 capture_data_to_csv(csv_file)
 
 # Adicionar os dados do CSV ao banco de dados SQLite
+
+
 add_csv_to_database(csv_file, db_file, table_name)
+
