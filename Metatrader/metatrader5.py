@@ -1,4 +1,6 @@
 # é necessário rodar primeiro o comando 'pip install Metatrader5'
+# é necessário rodar primeiro o comando 'pip install pip install pandas'
+# é necessário rodar primeiro o comando 'pip install pip install ipykernel'
 # é também necessário criar um arquivo de texto na pasta que possua 
 # o login do MetaTrader5 na primeira linha e a senha na segunda
 # %%
@@ -67,3 +69,9 @@ capture_data_to_csv(csv_file)
 
 add_csv_to_database(csv_file, db_file, table_name)
 
+
+# %%
+
+# %%
+
+# %%
