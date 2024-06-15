@@ -71,7 +71,3 @@ add_csv_to_database(csv_file, db_file, table_name)
 
 
 # %%
-
-# %%
-
-# %%
