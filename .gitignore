@@ -6,3 +6,5 @@ credentials.txt
 metatrader.db
 pyvenv.cfg
 trade.csv
+metatrader.db-shm
+metatrader.db-wal
