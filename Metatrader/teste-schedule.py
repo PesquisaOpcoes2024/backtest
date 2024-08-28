@@ -65,6 +65,7 @@ schedule.every().day.at("23:59").do(capture_data_to_csv, csv_file)
 schedule.every().day.at("00:00").do(add_csv_to_database, csv_file, db_file, table_name)
 
 # Loop infinito para executar o agendador
+# Espera 1 minuto antes de verificar novamente se há tarefas agendadas
 while True:
     schedule.run_pending()
-    time.sleep(60) # Espera 1 minuto antes de verificar novamente se há tarefas agendadas
+    time.sleep(60)
