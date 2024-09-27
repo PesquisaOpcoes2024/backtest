@@ -2,7 +2,6 @@ Include/
 Lib/
 Scripts/
 share/
-credentials.txt
 metatrader.db
 metatrader.db-shm
 metatrader.db-wal
