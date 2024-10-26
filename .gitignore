@@ -2,8 +2,8 @@ Include/
 Lib/
 Scripts/
 share/
-metatrader.db
-metatrader.db-shm
-metatrader.db-wal
+options_data.db
+options_data.db-shm
+options_data.db-wal
 pyvenv.cfg
-trade.csv
+options_data.csv
