@@ -1,94 +1,73 @@
-# %%
-import sys
+import requests
+import pandas as pd
 
-try:
-    import yfinance as yf
-    import pandas as pd
-    import sqlite3
-    from multiprocessing import Pool
-    import csv
-    print("Todas as bibliotecas foram importadas com sucesso.")
-except ImportError as e:
-    print(f"Erro ao importar bibliotecas: {e}")
-    sys.exit(1)
+def fetch_historical_options_data(symbol, access_token, start_date, end_date):
+    """Faz a requisição à API para obter dados históricos das opções."""
+    url = f"https://api.oplab.com.br/v3/historical/options/{symbol}"
+    headers = {
+        'Access-Token': access_token
+    }
+    
+    # Parâmetros para a data inicial e final
+    params = {
+        'start_date': start_date,  # Formato 'YYYY-MM-DD'
+        'end_date': end_date       # Formato 'YYYY-MM-DD'
+    }
 
-def capture_data(symbol):
-    try:
-        print(f"Iniciando captura de dados para {symbol}...")
-        df_ticks = yf.download(symbol, start="2024-04-01", end="2024-06-01", interval="1d")
+    # Faz a requisição GET
+    response = requests.get(url, headers=headers, params=params)
 
-        if df_ticks.empty:
-            print(f"Nenhum dado encontrado para {symbol}")
-            return None
-
-        print(f"Dados capturados para {symbol}:\n{df_ticks.head()}")
-
-        df_ticks["symbol"] = symbol
-        df_ticks.reset_index(inplace=True)
-        print(f"Dados processados para {symbol} com sucesso.")
-        return df_ticks
-
-    except Exception as e:
-        print(f"Erro ao capturar dados para {symbol}: {e}")
+    if response.status_code == 200:
+        return response.json()  # Retorna os dados JSON
+    else:
+        print(f"Erro: {response.status_code} - {response.text}")
         return None
 
-def save_to_csv(dataframes, filename):
-    try:
-        print(f"Salvando dados no arquivo {filename}...")
-        with open(filename, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['symbol', 'Datetime', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume'])
-            for df in dataframes:
-                if df is not None and not df.empty:
-                    for index, row in df.iterrows():
-                        writer.writerow([
-                            row["symbol"],
-                            row["Date"],
-                            row["Open"],
-                            row["High"],
-                            row["Low"],
-                            row["Close"],
-                            row["Adj Close"],
-                            row["Volume"]
-                        ])
-        print(f"Dados salvos no arquivo {filename} com sucesso.")
-    except Exception as e:
-        print(f"Erro ao salvar dados no arquivo CSV: {e}")
+def process_historical_data(data):
+    """Processa os dados históricos e os organiza em uma lista de dicionários."""
+    if data is None:
+        print("Nenhum dado para processar.")
+        return []
 
-def capture_all_options_to_csv(base_symbol, filename):
-    print("Iniciando captura de dados de múltiplos símbolos...")
-    petr_symbols = [base_symbol, 'PETR4.SA']
+    historical_data = []
+    for entry in data:
+        historical_data.append({
+            'date': entry.get('date'),
+            'open': entry.get('open'),
+            'high': entry.get('high'),
+            'low': entry.get('low'),
+            'close': entry.get('close'),
+            'volume': entry.get('volume'),
+            'adjusted_close': entry.get('adjusted_close'),
+        })
+    return historical_data
 
-    try:
-        with Pool() as pool:
-            dataframes = pool.map(capture_data, petr_symbols)
-        save_to_csv(dataframes, filename)
-        print("Captura e salvamento de dados concluídos.")
-    except Exception as e:
-        print(f"Erro durante o processo de captura e salvamento: {e}")
+def save_to_csv(data, filename):
+    """Salva os dados em um arquivo CSV."""
+    if not data:
+        print("Nenhum dado disponível para salvar.")
+        return
 
-def add_csv_to_database(csv_file, db_file, table_name):
-    try:
-        print(f"Iniciando a adição de dados do arquivo {csv_file} ao banco de dados {db_file}...")
-        df = pd.read_csv(csv_file)
-        print(f"Dados lidos do arquivo {csv_file}:\n{df.head()}")
-        conn = sqlite3.connect(db_file)
-        df.to_sql(table_name, conn, if_exists='append', index=False)
-        conn.close()
-        print(f"Dados do arquivo {csv_file} foram adicionados à tabela '{table_name}' no banco de dados '{db_file}' com sucesso.")
-    except Exception as e:
-        print(f"Erro ao adicionar dados ao banco de dados: {e}")
+    df = pd.DataFrame(data)
+    df.to_csv(filename, index=False)
+    print(f"Dados salvos em {filename}")
 
-csv_file = 'trade.csv'
-db_file = 'metatrader.db'
-table_name = 'trade'
+def main():
+    symbol = "PETR4"
+    access_token = "qUoxkqtK2dhIa4q3Ir9yqwnuYMvfYnHLtedgxM/EjBZHqE7SQv8/0ZE7y+nukIYZ--XhgBD6EPwF8T0Ffj4y3u1A==--ZTNjNDZiMDNkZGQ0MzBlMjFhMGQ4OGVhN2MyMWVkMzE="
+    start_date = "2023-01-01"
+    end_date = "2023-12-31"
 
-try:
-    capture_all_options_to_csv('PETR4.SA', csv_file)
-except Exception as e:
-    print(f"Erro durante a captura e salvamento dos dados: {e}")
+    # Faz a requisição para obter os dados históricos
+    data = fetch_historical_options_data(symbol, access_token, start_date, end_date)
 
-try:
-    add_csv_to_database(csv_file, db_file, table_name)
-except Exception as e:
-    print(f"Erro ao adicionar os dados ao banco de dados: {e}")
+    if data is not None:  # Verifica se dados foram retornados
+        # Processa os dados
+        processed_data = process_historical_data(data)
+        # Salva os dados em um arquivo CSV
+        save_to_csv(processed_data, 'historical_options_data.csv')
+    else:
+        print(f"Nenhum dado retornado para o símbolo {symbol}.")
+
+if __name__ == "__main__":
+    main()
