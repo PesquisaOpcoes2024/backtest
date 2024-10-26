@@ -119,7 +119,6 @@ def plot_price_vs_time(symbol, db_name='options_data.db'):
     plt.show()
 
 
-# Exemplo de uso
 def main():
     symbol = "PETR4"
     resolution = "1d"  
