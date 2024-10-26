@@ -123,7 +123,7 @@ def plot_price_vs_time(symbol, db_name='options_data.db'):
 def main():
     symbol = "PETR4"
     resolution = "1d"  
-    from_date = "2000-01-01"
+    from_date = "2020-01-01"
     to_date = "2024-01-01"
     access_token = 'qUoxkqtK2dhIa4q3Ir9yqwnuYMvfYnHLtedgxM/EjBZHqE7SQv8/0ZE7y+nukIYZ--XhgBD6EPwF8T0Ffj4y3u1A==--ZTNjNDZiMDNkZGQ0MzBlMjFhMGQ4OGVhN2MyMWVkMzE='
 
