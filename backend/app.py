@@ -20,6 +20,7 @@ def fetch_options_data(symbol, access_token, resolution, from_date, to_date):
         return None
 
 # Endpoint para obter dados do gráfico
+# Endpoint para obter dados do gráfico
 @app.route('/api/data', methods=['GET'])
 def get_data():
     symbol = request.args.get('symbol')
@@ -31,9 +32,14 @@ def get_data():
     options_data = fetch_options_data(symbol, access_token, resolution, from_date, to_date)
     if options_data and 'data' in options_data:
         # Formatando a data e enviando a resposta JSON
-        formatted_data = [{'date': item['time'], 'close': item['close']} for item in options_data['data']]
+        formatted_data = []
+        for item in options_data['data']:
+            # Convertendo o timestamp (em milissegundos) para data legível
+            date = datetime.fromtimestamp(item['time'] / 1000).strftime('%Y-%m-%d')
+            formatted_data.append({'date': date, 'close': item['close'], 'high': item['high'], 'low': item['low'], 'open': item['open'], 'volume': item['volume']})
         return jsonify(formatted_data), 200
     return jsonify({'error': 'Dados não encontrados'}), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
