@@ -17,19 +17,35 @@ const Grafico = ({ chartData, outliersData }) => {
     },
     xaxis: {
       type: 'category',
+      title: {
+        text: 'Data',
+      },
+      labels: {
+        rotate: -45,
+        rotateAlways: true,
+      },
+    },
+    yaxis: {
+      title: {
+        text: 'Preço',
+      },
     },
   };
 
   const series = [
     {
-      name: 'box',
+      name: 'Variação de Preços',
       type: 'boxPlot',
       data: chartData,
     },
     {
-      name: 'outliers',
+      name: 'Volume',
       type: 'scatter',
       data: outliersData,
+      marker: {
+        size: 5,
+        fillColor: '#00E396',
+      },
     },
   ];
 
@@ -41,3 +57,4 @@ const Grafico = ({ chartData, outliersData }) => {
 };
 
 export default Grafico;
+

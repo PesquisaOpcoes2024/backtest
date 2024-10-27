@@ -5,8 +5,8 @@ import axios from 'axios';
 
 const App = () => {
   const [symbol, setSymbol] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [fromDate, setFromDate] = useState("2023-01-01");
+  const [toDate, setToDate] = useState("2023-12-31");
   const [chartData, setChartData] = useState([]);
   const [outliersData, setOutliersData] = useState([]);
 
@@ -16,23 +16,32 @@ const App = () => {
         params: { symbol, from: fromDate, to: toDate }
       });
       const data = response.data;
-
+  
+      // Formatar os dados para o gráfico de boxplot
       const formattedData = data.map(item => ({
         x: new Date(item.date).toLocaleDateString(),
-        y: [item.low, item.open, item.close, item.close, item.high]
+        y: [item.low, item.open, item.close, item.high, item.high] // Estrutura do boxplot: [low, q1, median, q3, high]
       }));
-
+  
+      // Formatar os outliers usando o volume
       const formattedOutliers = data.map(item => ({
         x: new Date(item.date).toLocaleDateString(),
         y: item.volume
       }));
-
+  
       setChartData(formattedData);
       setOutliersData(formattedOutliers);
+      
+      console.log(data);
+      console.log(formattedData);
+      console.log(formattedOutliers);
+  
     } catch (error) {
       console.error("Erro ao buscar dados", error);
     }
   };
+  
+  
 
   return (
     <div>
