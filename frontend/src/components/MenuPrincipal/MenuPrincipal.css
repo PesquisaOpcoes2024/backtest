@@ -1,7 +1,7 @@
 .Titulo{
     color: #009c9c;
-    padding-left: 5rem;
-    font-size: 30px;
+    padding-left: 2rem;
+    font-size: 20px;
     position: absolute;
 }
 
@@ -9,9 +9,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-left: 8rem;
-    font-size: 20px;
+    margin-left: 2rem;
+    font-size: 14px;
     padding-top: 10rem;
+    font-weight: bold;
 }
 
 .Local_digitacao_nome {
@@ -26,8 +27,8 @@
 }
 
 .Input {
-    width: 8.5rem;
-    height: 2rem;
+    width: 5rem;
+    height: 1.5rem;
     margin-left: 1rem; /* Diminui a margem para aproximar o input do texto */
     -moz-appearance: textfield; /* Remove setas no Firefox */
 }
@@ -69,12 +70,12 @@ h5 {
 .Botao{
     display: flex;
     align-items: center;
-    margin-top: 4rem;
-    margin-left: 3rem;
+    margin-top: 2rem;
+    margin-left: -5rem;
   }
   
 .Botao_buscar{
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: bold;
     padding: 0.6rem;
     border: 3px solid black;
