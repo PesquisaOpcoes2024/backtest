@@ -3,7 +3,7 @@ import axios from 'axios';
 import Chart from 'react-apexcharts';
 
 const App = () => {
-  const [symbol, setSymbol] = useState("PETR4");
+  const [symbol, setSymbol] = useState("");
   const [fromDate, setFromDate] = useState("2023-01-01");
   const [toDate, setToDate] = useState("2023-12-31");
   const [chartData, setChartData] = useState([]);
@@ -22,7 +22,7 @@ const App = () => {
       // Formatação dos dados para o BoxPlot
       const formattedData = data.map(item => ({
         x: new Date(item.date).toLocaleDateString(),
-        y: [item.high, item.close, item.close, item.close, item.high] // Exemplo de dados para o BoxPlot
+        y: [item.low, item.open, item.close, item.close, item.high] // Tem q ver na documentação a posição de cada coisa se não inverte o grafico
       }));
 
       setChartData(formattedData);
