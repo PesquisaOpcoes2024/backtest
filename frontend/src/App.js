@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MenuPrincipal from './components/MenuPrincipal/MenuPrincipal';
 import Grafico from './components/Grafico/Grafico';
+import RsiChart from './components/Grafico/GraficoIFR'; // Importar o componente RsiChart
 import axios from 'axios';
 import './App.css'; // Importar o arquivo CSS
 
@@ -35,7 +36,19 @@ const App = () => {
       console.error("Erro ao buscar dados", error);
     }
   };
-  
+
+  const fetchRsiData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/ifr', {
+        params: { symbol, from: fromDate, to: toDate }
+      });
+      // Aqui você pode processar e armazenar os dados do IFR se necessário
+      console.log("Dados do IFR:", response.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados do IFR", error);
+    }
+  };
+
   return (
     <div className="container_principal">
       <div className="menu_container">
@@ -47,6 +60,7 @@ const App = () => {
           setFromDate={setFromDate}
           setToDate={setToDate}
           fetchData={fetchData}
+          fetchRsiData={fetchRsiData} // Passando a função fetchRsiData como prop
         />
       </div>
       <div className="grafico_container">
@@ -54,6 +68,9 @@ const App = () => {
           chartData={chartData}
           outliersData={outliersData}
         />
+      </div>
+      <div className="rsi_chart_container">
+        <RsiChart /> {/* Adicionando o componente RsiChart aqui */}
       </div>
     </div>
   );
