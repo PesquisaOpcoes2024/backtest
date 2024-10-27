@@ -7,3 +7,5 @@ options_data.db-shm
 options_data.db-wal
 pyvenv.cfg
 options_data.csv
+package-lock.json
+package.json
