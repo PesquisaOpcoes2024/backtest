@@ -5,8 +5,8 @@ import axios from 'axios';
 
 const App = () => {
   const [symbol, setSymbol] = useState("");
-  const [fromDate, setFromDate] = useState("2023-01-01");
-  const [toDate, setToDate] = useState("2023-12-31");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [chartData, setChartData] = useState([]);
   const [outliersData, setOutliersData] = useState([]);
 

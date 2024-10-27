@@ -2,39 +2,34 @@ import React from 'react';
 import Chart from 'react-apexcharts';
 
 const Grafico = ({ chartData, outliersData }) => {
-  const options = {
+  const chartOptions = {
     chart: {
       type: 'boxPlot',
-      height: 350,
     },
-    plotOptions: {
-      boxPlot: {
-        colors: {
-          upper: '#5C4742',
-          lower: '#A5978B',
-        },
-      },
+    title: {
+      text: `Preço do Ativo ao Longo do Tempo`,
+      align: 'center'
     },
     xaxis: {
       type: 'category',
-      title: {
-        text: 'Data',
-      },
-      labels: {
-        rotate: -45,
-        rotateAlways: true,
-      },
     },
-    yaxis: {
-      title: {
-        text: 'Preço',
+    yaxis: [
+      {
+        title: { text: "Preço (R$)" },
       },
-    },
+      {
+        opposite: true,
+        title: { text: "Volume" },
+        labels: {
+          formatter: (val) => `${val.toFixed(0)}`,
+        }
+      }
+    ]
   };
 
-  const series = [
+  const chartSeries = [
     {
-      name: 'Variação de Preços',
+      name: 'BoxPlot',
       type: 'boxPlot',
       data: chartData,
     },
@@ -42,16 +37,13 @@ const Grafico = ({ chartData, outliersData }) => {
       name: 'Volume',
       type: 'scatter',
       data: outliersData,
-      marker: {
-        size: 5,
-        fillColor: '#00E396',
-      },
+      yAxisIndex: 1, // Define que os outliers(volume) usarão o eixo Y secundário
     },
   ];
 
   return (
     <div id="chart">
-      <Chart options={options} series={series} type="boxPlot" height={350} />
+      <Chart options={chartOptions} series={chartSeries} type="boxPlot" height={400} />
     </div>
   );
 };
