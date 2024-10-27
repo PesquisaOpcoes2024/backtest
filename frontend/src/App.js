@@ -7,6 +7,7 @@ const App = () => {
   const [fromDate, setFromDate] = useState("2023-01-01");
   const [toDate, setToDate] = useState("2023-12-31");
   const [chartData, setChartData] = useState([]);
+  const [outliersData, setOutliersData] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -19,13 +20,19 @@ const App = () => {
       });
       const data = response.data;
 
-      // Formatação dos dados para o BoxPlot
+      // Formatação dos dados para o BoxPlot (grafico gordinho) e Outliers (bola que representa o volume do ativo)
       const formattedData = data.map(item => ({
         x: new Date(item.date).toLocaleDateString(),
-        y: [item.low, item.open, item.close, item.close, item.high] // Tem q ver na documentação a posição de cada coisa se não inverte o grafico
+        y: [item.low, item.open, item.close, item.close, item.high]
+      }));
+
+      const formattedOutliers = data.map(item => ({
+        x: new Date(item.date).toLocaleDateString(),
+        y: item.volume
       }));
 
       setChartData(formattedData);
+      setOutliersData(formattedOutliers);
     } catch (error) {
       console.error("Erro ao buscar dados", error);
     }
@@ -42,15 +49,33 @@ const App = () => {
     xaxis: {
       type: 'category',
     },
-    yaxis: {
-      title: { text: "Preço (R$)" },
-    },
+    yaxis: [
+      {
+        title: { text: "Preço (R$)" },
+      },
+      {
+        opposite: true,
+        title: { text: "Volume" },
+        labels: {
+          formatter: (val) => `${val.toFixed(0)}`,
+        }
+      }
+    ]
   };
 
-  const chartSeries = [{
-    name: 'BoxPlot',
-    data: chartData
-  }];
+  const chartSeries = [
+    {
+      name: 'BoxPlot',
+      type: 'boxPlot',
+      data: chartData,
+    },
+    {
+      name: 'Volume',
+      type: 'scatter',
+      data: outliersData,
+      yAxisIndex: 1, // Define que os outliers(volume) usarão o eixo Y secundário
+    },
+  ];
 
   return (
     <div>
