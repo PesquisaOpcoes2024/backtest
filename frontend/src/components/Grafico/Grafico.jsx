@@ -43,7 +43,7 @@ const Grafico = ({ chartData, outliersData }) => {
 
   return (
     <div id="chart">
-      <Chart options={chartOptions} series={chartSeries} type="boxPlot" height={400} />
+      <Chart options={chartOptions} series={chartSeries} type="boxPlot" height={450} width={800}/>
     </div>
   );
 };
