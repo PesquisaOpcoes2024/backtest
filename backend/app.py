@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request
 from datetime import datetime
 import pandas as pd
-import sqlite3
+import numpy as np
 import requests
 from flask_cors import CORS
-import numpy as np
 
 app = Flask(__name__)
 CORS(app)
@@ -20,24 +19,19 @@ def fetch_options_data(symbol, access_token, resolution, from_date, to_date):
     else:
         return None
 
-# Função para calcular o RSI
-def calculate_rsi(data, column, window=14):
-    data = data.copy()
-    
-    # Calcula ganhos e perdas diários
-    data['Variation'] = data[column].diff()
-    data['Gain'] = np.where(data['Variation'] > 0, data['Variation'], 0)
-    data['Loss'] = np.where(data['Variation'] < 0, -data['Variation'], 0)
+# Função para calcular o RSI (Índice de Força Relativa)
+def calculate_rsi(data, column='close', window=15):
+    delta = data[column].diff()
+    gain = np.where(delta > 0, delta, 0)
+    loss = np.where(delta < 0, -delta, 0)
 
-    # Calcula médias móveis exponenciais de ganho e perda
-    avg_gain = data['Gain'].rolling(window=window).mean()
-    avg_loss = data['Loss'].rolling(window=window).mean()
-    
-    # Calcula o RS e o RSI
-    RS = avg_gain / avg_loss.replace(0, np.nan)  # Evita divisão por zero
-    RSI = 100 - (100 / (1 + RS))
-    
-    return RSI
+    avg_gain = pd.Series(gain).rolling(window=window, min_periods=1).mean()
+    avg_loss = pd.Series(loss).rolling(window=window, min_periods=1).mean()
+
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+
+    return rsi
 
 # Endpoint para obter dados do gráfico
 @app.route('/api/data', methods=['GET'])
@@ -48,59 +42,39 @@ def get_data():
     resolution = "1d"
     access_token = 'qUoxkqtK2dhIa4q3Ir9yqwnuYMvfYnHLtedgxM/EjBZHqE7SQv8/0ZE7y+nukIYZ--XhgBD6EPwF8T0Ffj4y3u1A==--ZTNjNDZiMDNkZGQ0MzBlMjFhMGQ4OGVhN2MyMWVkMzE='
 
+    # Valores fixos para limite superior, limite inferior e janela
+    limit_up = 70
+    limit_down = 30
+    window = 15
+
     options_data = fetch_options_data(symbol, access_token, resolution, from_date, to_date)
     if options_data and 'data' in options_data:
         data = pd.DataFrame(options_data['data'])
 
+        # Adiciona a coluna de data
         data['date'] = pd.to_datetime(data['time'], unit='ms')
 
+        # Filtra dados entre as datas especificadas
+        data = data[(data['date'] >= from_date) & (data['date'] <= to_date)]
+
+        # Calcula o RSI com a janela fixa
+        data['RSI'] = calculate_rsi(data, window=window)
+
+        # Resample e agregação dos dados
         monthly_data = data.resample('MS', on='date').agg({
             'close': 'last',
             'high': 'max',
             'low': 'min',
             'open': 'first',
-            'volume': 'sum'
+            'volume': 'sum',
+            'RSI': 'last'
         }).reset_index()
 
+        # Formata os dados para JSON
         formatted_data = monthly_data.round(2).to_dict(orient='records')
         return jsonify(formatted_data), 200
 
     return jsonify({'error': 'Dados não encontrados'}), 404
 
-@app.route('/api/ifr', methods=['GET'])
-def get_ifr():
-    symbol = request.args.get('symbol')
-    from_date = request.args.get('from')
-    to_date = request.args.get('to')
-    resolution = "1d"
-    access_token = 'qUoxkqtK2dhIa4q3Ir9yqwnuYMvfYnHLtedgxM/EjBZHqE7SQv8/0ZE7y+nukIYZ--XhgBD6EPwF8T0Ffj4y3u1A==--ZTNjNDZiMDNkZGQ0MzBlMjFhMGQ4OGVhN2MyMWVkMzE='
-
-    
-    print(f"Fetching data for symbol: {symbol}, from: {from_date}, to: {to_date}")
-
-    options_data = fetch_options_data(symbol, access_token, resolution, from_date, to_date)
-    if options_data and 'data' in options_data:
-        data = pd.DataFrame(options_data['data'])
-        data['date'] = pd.to_datetime(data['time'], unit='ms')
-
-        # Calcular o RSI
-        rsi_values = calculate_rsi(data, 'close')
-
-        # Adiciona o RSI ao DataFrame
-        data['RSI'] = rsi_values
-
-        # Seleciona apenas as colunas relevantes para o frontend
-        rsi_data = data[['date', 'RSI']].dropna()
-
-        formatted_data = rsi_data.round(2).to_dict(orient='records')
-        return jsonify(formatted_data), 200
-
-    print("No data found or invalid response.")
-    return jsonify({'error': 'Dados não encontrados'}), 404
-
-
 if __name__ == '__main__':
     app.run(debug=True)
-
-# @app.route('/api/ifr', methods=['GET'])
-# def get_ifr():
