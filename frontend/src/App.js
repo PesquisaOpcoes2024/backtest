@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import MenuPrincipal from './components/MenuPrincipal/MenuPrincipal';
 import Grafico from './components/Grafico/Grafico';
-import RsiChart from './components/Grafico/GraficoIFR'; // Importar o componente RsiChart
+import GraficoRSI from './components/Grafico/GraficoIFR';
 import axios from 'axios';
-import './App.css'; // Importar o arquivo CSS
+import './App.css';
 
 const App = () => {
   const [symbol, setSymbol] = useState("");
@@ -11,41 +11,35 @@ const App = () => {
   const [toDate, setToDate] = useState("");
   const [chartData, setChartData] = useState([]);
   const [outliersData, setOutliersData] = useState([]);
+  const [rsiData, setRsiData] = useState([]);
 
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/data', {
-        params: { symbol, from: fromDate, to: toDate }
+        params: { symbol, from: fromDate, to: toDate, limitUp: 70, limitDown: 30, window: 15 }
       });
       const data = response.data;
-  
+
       const formattedData = data.map(item => ({
         x: new Date(item.date).toLocaleDateString(),
         y: [item.low, item.open, item.close, item.high, item.high]
       }));
-  
+
       const formattedOutliers = data.map(item => ({
         x: new Date(item.date).toLocaleDateString(),
         y: item.volume
       }));
-  
+
+      const formattedRsiData = data.map(item => ({
+        x: new Date(item.date).toLocaleDateString(),
+        y: item.RSI
+      }));
+
       setChartData(formattedData);
       setOutliersData(formattedOutliers);
-      
+      setRsiData(formattedRsiData);
     } catch (error) {
       console.error("Erro ao buscar dados", error);
-    }
-  };
-
-  const fetchRsiData = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/ifr', {
-        params: { symbol, from: fromDate, to: toDate }
-      });
-      // Aqui você pode processar e armazenar os dados do IFR se necessário
-      console.log("Dados do IFR:", response.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados do IFR", error);
     }
   };
 
@@ -60,7 +54,6 @@ const App = () => {
           setFromDate={setFromDate}
           setToDate={setToDate}
           fetchData={fetchData}
-          fetchRsiData={fetchRsiData} // Passando a função fetchRsiData como prop
         />
       </div>
       <div className="grafico_container">
@@ -68,9 +61,7 @@ const App = () => {
           chartData={chartData}
           outliersData={outliersData}
         />
-      </div>
-      <div className="rsi_chart_container">
-        <RsiChart /> {/* Adicionando o componente RsiChart aqui */}
+        <GraficoRSI rsiData={rsiData} />
       </div>
     </div>
   );
