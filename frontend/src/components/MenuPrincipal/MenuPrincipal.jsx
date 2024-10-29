@@ -16,25 +16,25 @@ const MenuPrincipal = ({ symbol, fromDate, toDate, setSymbol, setFromDate, setTo
             onChange={(e) => setSymbol(e.target.value)}
           />
         </div>
-        <div className="Local_digitacao_nome">
+        <div className="Local_digitacao_data">
           <label>Data de Início:</label>
           <input
             type="date"
-            className="Input"
+            className="Input_data"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
           />
-        </div>
-        <div className="Local_digitacao_nome">
           <label>Data de Fim:</label>
           <input
             type="date"
-            className="Input"
+            className="Input_data"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
           />
         </div>
-      <button onClick={fetchData}>Buscar Dados</button>
+        <div className='Botao'>
+          <button onClick={fetchData} className='Botao_buscar'>Buscar Dados</button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,10 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@600&display=swap');
+
+
 body{
-  background-color: snow;
+  background-color: #EEF7FF;
+  font-family: "Oxanium", sans-serif;
 }
 
 .App{
@@ -18,7 +23,12 @@ body{
 
 .grafico_container {
   flex: 1;
-  padding-top: 6rem;
-  padding-right: 1rem;
+  padding-top: 4rem;
+  padding-right: 2rem;
 }
 
+.graficoIFR_container{
+  padding-top: 1.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}

@@ -44,6 +44,7 @@ const App = () => {
   };
 
   return (
+    <>
     <div className="container_principal">
       <div className="menu_container">
         <MenuPrincipal
@@ -61,9 +62,12 @@ const App = () => {
           chartData={chartData}
           outliersData={outliersData}
         />
-        <GraficoRSI rsiData={rsiData} />
       </div>
     </div>
+    <div className="graficoIFR_container">
+      <GraficoRSI rsiData={rsiData} />
+    </div>
+    </>
   );
 };
 

@@ -7,6 +7,10 @@ const GraficoRSI = ({ rsiData }) => {
       type: 'line',
       height: 350
     },
+    title: {
+      text: `Índice de Força Relativa (IFR) do ativo`,
+      align: 'center'
+    },
     stroke: {
       curve: 'smooth'
     },
@@ -50,7 +54,7 @@ const GraficoRSI = ({ rsiData }) => {
     }
   ];
 
-  return <Chart options={options} series={series} type="line" height={350} />;
+  return <Chart options={options} series={series} type="line" height={220} />;
 };
 
 export default GraficoRSI;
