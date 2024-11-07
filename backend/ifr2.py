@@ -135,8 +135,8 @@ def main():
     start_date_str = start_date.strftime("%Y-%m-%d")
 
     # Baixa os dados de uma semana atrás até hoje
-    data = yf.download("EMBR3.SA", start=start_date_str, end=end_date_str)
-    plot_rsi(data, column="Adj Close", window=9, limit_up=80, limit_down=20)
+    data = yf.download("LREN3.SA", start=start_date_str, end=end_date_str)
+    # plot_rsi(data, column="Adj Close", window=9, limit_up=80, limit_down=20)
     
     df = yf.download("LREN3.SA", start=start_date_str, end=end_date_str).copy()[["Open", "High", "Close", "Adj Close"]]
     total_capital, all_profits = run_backtest(df)
